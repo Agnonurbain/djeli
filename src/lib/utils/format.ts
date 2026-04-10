@@ -21,6 +21,40 @@ export function formatXOF(amount: number): string {
 }
 
 /**
+ * Normalise un numéro de téléphone ivoirien au format international E.164.
+ * Entrée : "0701020304" ou "+2250701020304" ou "225 07 01 02 03 04"
+ * Sortie : "+2250701020304"
+ *
+ * Utilisé avant d'envoyer le numéro à Supabase Auth / Twilio.
+ */
+export function normalizePhone(phone: string): string {
+  // Garder uniquement les chiffres
+  const digits = phone.replace(/\D/g, "");
+
+  // Déjà au format international avec indicatif
+  if (digits.startsWith("225") && digits.length === 13) {
+    return `+${digits}`;
+  }
+
+  // Numéro local avec 0 initial (0701020304 → 10 chiffres)
+  if (digits.startsWith("0") && digits.length === 10) {
+    return `+225${digits}`;
+  }
+
+  // Numéro local sans 0 (701020304 → mais les numéros CI font 10 chiffres avec le 0)
+  if (digits.length === 10 && !digits.startsWith("0")) {
+    return `+225${digits}`;
+  }
+
+  // Fallback : ajouter +225 si pas d'indicatif
+  if (!digits.startsWith("225")) {
+    return `+225${digits}`;
+  }
+
+  return `+${digits}`;
+}
+
+/**
  * Formate un numéro de téléphone ivoirien.
  * Entrée : "0701020304" ou "+2250701020304" ou "2250701020304"
  * Sortie : "+225 07 01 02 03 04"
