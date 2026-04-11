@@ -9,7 +9,7 @@
     "lint": "next lint",
     "type-check": "tsc --noEmit",
     "test": "vitest",
-    "db:generate": "npx supabase gen types typescript --project-id $SUPABASE_PROJECT_ID > src/types/database.ts",
+    "db:generate": "npx supabase gen types typescript --project-id wdeejquazxbpdjxgkrth > src/types/database.ts",
     "db:migrate": "npx supabase db push",
     "format": "prettier --write ."
   },
