@@ -14,6 +14,7 @@
 
 import type { Intent, EmotionalState, Message } from '@/types/chat';
 import { getGeminiModel, type DjeliState } from '@/lib/ai/agent';
+import { GEMINI_FAST_MODEL } from '@/lib/ai/models';
 
 /** Nombre de messages récents à inclure dans le contexte de classification */
 const RECENT_HISTORY_COUNT = 6;
@@ -126,7 +127,7 @@ function parseClassificationResponse(responseText: string): {
 export async function routerNode(
   state: DjeliState
 ): Promise<Partial<DjeliState>> {
-  const model = getGeminiModel('gemini-1.5-flash');
+  const model = getGeminiModel(GEMINI_FAST_MODEL);
 
   // Si l'API n'est pas configurée, on route par défaut vers teach
   if (!model) {

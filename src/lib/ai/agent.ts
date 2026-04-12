@@ -45,7 +45,7 @@ export type DjeliState = typeof DjeliStateAnnotation.State;
  * Retourne `null` si la clé est absente — les noeuds peuvent alors basculer
  * sur un comportement dégradé plutôt que de planter.
  *
- * @param modelName - Nom du modèle Gemini (ex: "gemini-1.5-pro", "gemini-1.5-flash")
+ * @param modelName - Nom du modèle Gemini (utiliser les constantes de `@/lib/ai/models`)
  */
 export function getGeminiModel(modelName: string): GenerativeModel | null {
   const apiKey = process.env.GOOGLE_AI_API_KEY;

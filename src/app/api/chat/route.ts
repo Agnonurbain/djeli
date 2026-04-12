@@ -22,6 +22,7 @@ import { chatMessageSchema } from "@/lib/utils/validators";
 import { buildSystemPrompt } from "@/lib/ai/prompts/system";
 import { ragPipeline } from "@/lib/ai/rag";
 import type { RAGContext } from "@/lib/ai/rag";
+import { GEMINI_SMART_MODEL } from "@/lib/ai/models";
 import type { Mastery, Message } from "@/types/chat";
 import type { StudentLevel } from "@/types/curriculum";
 import type { Json } from "@/types/database";
@@ -302,7 +303,7 @@ export async function POST(request: NextRequest) {
 
     try {
       const genAI = new GoogleGenerativeAI(process.env.GOOGLE_AI_API_KEY!);
-      const model = genAI.getGenerativeModel({ model: "gemini-1.5-pro" });
+      const model = genAI.getGenerativeModel({ model: GEMINI_SMART_MODEL });
 
       const result = await model.generateContentStream({
         contents,

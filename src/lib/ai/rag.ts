@@ -14,6 +14,7 @@
 
 import { GoogleGenerativeAI } from '@google/generative-ai';
 import { createClient } from '@/lib/supabase/server';
+import { GEMINI_EMBEDDING_MODEL } from '@/lib/ai/models';
 import type { Database } from '@/types/database';
 
 /** Niveaux scolaires valides du programme ivoirien */
@@ -21,9 +22,6 @@ type StudentLevel = Database['public']['Enums']['student_level'];
 
 /** Nombre de documents récupérés par défaut */
 const DEFAULT_MATCH_COUNT = 5;
-
-/** Modèle d'embedding Gemini utilisé pour la recherche sémantique */
-const EMBEDDING_MODEL = 'text-embedding-004';
 
 export interface RAGContext {
   /** Contenus récupérés depuis pgvector, triés par similarité */
@@ -68,7 +66,7 @@ export async function embedQuery(query: string): Promise<number[]> {
 
   try {
     const genAI = new GoogleGenerativeAI(apiKey);
-    const model = genAI.getGenerativeModel({ model: EMBEDDING_MODEL });
+    const model = genAI.getGenerativeModel({ model: GEMINI_EMBEDDING_MODEL });
 
     const result = await model.embedContent(query);
     return result.embedding.values;

@@ -17,6 +17,7 @@
 import { buildSystemPrompt } from '@/lib/ai/prompts/system';
 import { ragPipeline, formatRAGContext } from '@/lib/ai/rag';
 import { getGeminiModel, type DjeliState } from '@/lib/ai/agent';
+import { GEMINI_SMART_MODEL } from '@/lib/ai/models';
 import type { Message } from '@/types/chat';
 import type { StudentLevel } from '@/types/curriculum';
 
@@ -71,8 +72,8 @@ export async function teachNode(
     ? `${systemPromptBase}\n\n${ragContextText}`
     : systemPromptBase;
 
-  // 3. Appel Gemini 1.5 Pro (qualité pédagogique)
-  const model = getGeminiModel('gemini-1.5-pro');
+  // 3. Appel du modèle Gemini "smart" (qualité pédagogique)
+  const model = getGeminiModel(GEMINI_SMART_MODEL);
 
   // Si l'API n'est pas configurée, on retourne une réponse de secours
   if (!model) {

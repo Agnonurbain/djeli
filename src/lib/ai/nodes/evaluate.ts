@@ -13,6 +13,7 @@
 
 import { buildSystemPrompt } from '@/lib/ai/prompts/system';
 import { getGeminiModel, type DjeliState } from '@/lib/ai/agent';
+import { GEMINI_SMART_MODEL } from '@/lib/ai/models';
 import type { StudentLevel } from '@/types/curriculum';
 
 /**
@@ -93,7 +94,7 @@ function parseEvaluationResponse(responseText: string): {
 export async function evaluateNode(
   state: DjeliState
 ): Promise<Partial<DjeliState>> {
-  const model = getGeminiModel('gemini-1.5-pro');
+  const model = getGeminiModel(GEMINI_SMART_MODEL);
 
   if (!model) {
     return {

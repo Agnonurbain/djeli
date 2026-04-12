@@ -14,6 +14,7 @@
 
 import { buildSystemPrompt } from '@/lib/ai/prompts/system';
 import { getGeminiModel, type DjeliState } from '@/lib/ai/agent';
+import { GEMINI_FAST_MODEL } from '@/lib/ai/models';
 import type { EmotionalState, Message } from '@/types/chat';
 import type { StudentLevel } from '@/types/curriculum';
 
@@ -73,7 +74,7 @@ function buildEmotionalGuidance(emotionalState: EmotionalState): string {
 export async function motivateNode(
   state: DjeliState
 ): Promise<Partial<DjeliState>> {
-  const model = getGeminiModel('gemini-1.5-flash');
+  const model = getGeminiModel(GEMINI_FAST_MODEL);
 
   if (!model) {
     return {
