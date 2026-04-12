@@ -2,6 +2,7 @@
 "use client";
 
 import { useEffect, useRef } from "react";
+import katex from "katex";
 
 interface LatexRendererProps {
   /** Expression LaTeX à rendre via KaTeX */
@@ -11,11 +12,13 @@ interface LatexRendererProps {
 }
 
 /**
- * Composant wrapper pour le rendu KaTeX.
+ * Rendu KaTeX d'une expression LaTeX.
  *
- * TODO: Importer katex et appeler katex.render() dans le useEffect.
- * KaTeX est utilisé à la place de MathJax pour sa légèreté
- * (important pour les appareils Android entrée de gamme en CI).
+ * KaTeX est utilisé à la place de MathJax pour sa légèreté et sa vitesse,
+ * critique pour les appareils Android entrée de gamme ciblés par Djeli.
+ *
+ * En cas d'erreur de parsing LaTeX, le texte brut est affiché en fallback
+ * dans la couleur d'erreur — l'élève peut alors comprendre le problème.
  */
 export default function LatexRenderer({
   latex,
@@ -24,22 +27,32 @@ export default function LatexRenderer({
   const containerRef = useRef<HTMLSpanElement>(null);
 
   useEffect(() => {
-    // TODO: Intégrer KaTeX ici
-    // import("katex").then((katex) => {
-    //   if (containerRef.current) {
-    //     katex.default.render(latex, containerRef.current, { displayMode });
-    //   }
-    // });
+    if (!containerRef.current) return;
+
+    try {
+      katex.render(latex, containerRef.current, {
+        displayMode,
+        throwOnError: false,
+        // `strict: false` autorise certaines commandes non standard utilisées
+        // occasionnellement par les LLM sans planter tout le rendu.
+        strict: false,
+        output: "html",
+      });
+    } catch {
+      // Secours : affichage du LaTeX brut en monospace rouge
+      if (containerRef.current) {
+        containerRef.current.textContent = latex;
+        containerRef.current.className =
+          "font-mono text-red-400 text-xs whitespace-pre-wrap";
+      }
+    }
   }, [latex, displayMode]);
 
   return (
     <span
       ref={containerRef}
-      className={displayMode ? "block my-4 text-center text-lg" : "inline"}
+      className={displayMode ? "block my-4 text-center" : "inline"}
       aria-label={`Formule mathématique : ${latex}`}
-    >
-      {/* Placeholder — affiche le LaTeX brut en attendant l'intégration KaTeX */}
-      <code className="font-mono text-amber-300">{latex}</code>
-    </span>
+    />
   );
 }

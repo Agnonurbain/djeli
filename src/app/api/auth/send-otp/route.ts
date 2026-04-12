@@ -35,6 +35,14 @@ export async function POST(request: NextRequest) {
     });
 
     if (error) {
+      // Log côté serveur pour debug (visible dans le terminal `npm run dev`)
+      console.error("[send-otp] Supabase error:", {
+        status: error.status,
+        code: error.code,
+        message: error.message,
+        phone,
+      });
+
       // Rate limit atteint côté Supabase
       if (error.status === 429) {
         return NextResponse.json(
@@ -56,7 +64,8 @@ export async function POST(request: NextRequest) {
     }
 
     return NextResponse.json({ success: true });
-  } catch {
+  } catch (err) {
+    console.error("[send-otp] Internal error:", err);
     return NextResponse.json(
       {
         error: "Erreur interne du serveur.",

@@ -42,7 +42,7 @@ echo "  ✓ Types générés dans src/types/database.ts"
 # 4. Vérification
 echo ""
 echo "[4/4] Vérification du type-check..."
-npx tsc --noEmit
+npm run type-check
 echo "  ✓ TypeScript OK"
 
 echo ""
