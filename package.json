@@ -11,6 +11,7 @@
     "test": "vitest",
     "db:generate": "npx supabase gen types typescript --project-id wdeejquazxbpdjxgkrth > src/types/database.ts",
     "db:migrate": "npx supabase db push",
+    "db:embed": "node scripts/embed-curriculum.mjs",
     "format": "prettier --write ."
   },
   "dependencies": {
