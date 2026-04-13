@@ -2,55 +2,94 @@
 'use client';
 
 /**
- * Hook lecture/écriture progression élève.
+ * Hook lecture progression élève.
  *
- * Lit et met à jour l'arbre de maîtrise (mastery_tree) de l'élève
- * depuis Supabase. Gère le cache local pour le mode offline.
+ * Lit la progression complète depuis /api/progress :
+ *   - profil (xp, niveau, streak)
+ *   - arbre de maîtrise (mastery_tree groupé par matière)
+ *
+ * Le mode offline (cache IndexedDB) est laissé pour l'Étape 8 (Service Worker).
  */
 
 import { useCallback, useEffect, useState } from 'react';
+import type { Mastery } from '@/types/chat';
+import type { LevelProgress } from '@/lib/progress/xp';
 
-interface MasteryNode {
+export interface MasteryNode {
   id: string;
   subject: string;
   topic: string;
-  masteryLevel: 'novice' | 'apprenti' | 'confirme' | 'expert' | 'maitre';
+  masteryLevel: Mastery;
   exercisesCompleted: number;
   lastScore: number | null;
+  updatedAt: string | null;
+}
+
+export interface ProgressData extends LevelProgress {
+  /** Niveau scolaire de l'élève (6eme, tle, l1, ...) */
+  studentLevel: string;
+  /** Série de jours d'activité consécutifs */
+  streakDays: number;
+  /** Arbre de maîtrise complet, trié par matière puis par chapitre */
+  masteryTree: MasteryNode[];
 }
 
 interface UseProgressReturn {
-  /** Arbre de maîtrise de l'élève */
-  masteryTree: MasteryNode[];
-  /** XP total de l'élève */
-  xp: number;
-  /** Série de jours consécutifs d'activité */
-  streakDays: number;
+  /** Données de progression, ou null tant qu'elles ne sont pas chargées */
+  data: ProgressData | null;
   /** Chargement en cours */
   isLoading: boolean;
-  /** Erreur éventuelle */
+  /** Erreur éventuelle (texte affichable à l'utilisateur) */
   error: string | null;
   /** Rafraîchir la progression depuis le serveur */
   refresh: () => Promise<void>;
 }
 
+/**
+ * Hook React pour récupérer la progression de l'élève connecté.
+ * À utiliser dans les Server Components côté client (page /arbre, header XP, ...).
+ */
 export function useProgress(): UseProgressReturn {
-  const [masteryTree, _setMasteryTree] = useState<MasteryNode[]>([]);
-  const [xp, _setXp] = useState(0);
-  const [streakDays, _setStreakDays] = useState(0);
+  const [data, setData] = useState<ProgressData | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   const refresh = useCallback(async () => {
-    // TODO: Charger la progression depuis /api/progress
-    // Avec fallback IndexedDB si offline
-    setIsLoading(false);
-    setError('Progression non implémentée');
+    setIsLoading(true);
+    setError(null);
+
+    try {
+      const response = await fetch('/api/progress', {
+        method: 'GET',
+        credentials: 'include',
+      });
+
+      if (!response.ok) {
+        const payload = (await response.json().catch(() => null)) as
+          | { error?: string }
+          | null;
+        throw new Error(
+          payload?.error ?? `Erreur ${response.status} lors du chargement.`
+        );
+      }
+
+      const payload = (await response.json()) as ProgressData;
+      setData(payload);
+    } catch (err) {
+      const message =
+        err instanceof Error
+          ? err.message
+          : 'Impossible de charger la progression.';
+      setError(message);
+      setData(null);
+    } finally {
+      setIsLoading(false);
+    }
   }, []);
 
   useEffect(() => {
     void refresh();
   }, [refresh]);
 
-  return { masteryTree, xp, streakDays, isLoading, error, refresh };
+  return { data, isLoading, error, refresh };
 }

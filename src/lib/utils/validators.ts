@@ -85,6 +85,29 @@ export const checkoutSchema = z.object({
 });
 
 /**
+ * Validation d'un update de progression après un exercice.
+ * Envoyé par POST /api/progress quand un élève termine un exercice (QCM,
+ * rédaction, calcul, photo). Le serveur recalcule XP + niveau de maîtrise.
+ */
+export const progressUpdateSchema = z.object({
+  subject: z
+    .string()
+    .trim()
+    .min(1, 'La matière est requise')
+    .max(50, 'Matière invalide'),
+  topic: z
+    .string()
+    .trim()
+    .min(1, 'Le chapitre est requis')
+    .max(100, 'Chapitre invalide'),
+  exerciseType: z.enum(['qcm', 'redaction', 'calcul', 'photo']),
+  score: z
+    .number()
+    .min(0, 'Le score doit être ≥ 0')
+    .max(1, 'Le score doit être ≤ 1'),
+});
+
+/**
  * Validation du code d'appairage parent-élève.
  */
 export const pairingCodeSchema = z.object({
