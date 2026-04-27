@@ -85,6 +85,29 @@ export const checkoutSchema = z.object({
 });
 
 /**
+ * Validation d'un update de progression après un exercice.
+ * Envoyé par POST /api/progress quand un élève termine un exercice (QCM,
+ * rédaction, calcul, photo). Le serveur recalcule XP + niveau de maîtrise.
+ */
+export const progressUpdateSchema = z.object({
+  subject: z
+    .string()
+    .trim()
+    .min(1, 'La matière est requise')
+    .max(50, 'Matière invalide'),
+  topic: z
+    .string()
+    .trim()
+    .min(1, 'Le chapitre est requis')
+    .max(100, 'Chapitre invalide'),
+  exerciseType: z.enum(['qcm', 'redaction', 'calcul', 'photo']),
+  score: z
+    .number()
+    .min(0, 'Le score doit être ≥ 0')
+    .max(1, 'Le score doit être ≤ 1'),
+});
+
+/**
  * Validation du code d'appairage parent-élève.
  */
 export const pairingCodeSchema = z.object({
@@ -93,4 +116,34 @@ export const pairingCodeSchema = z.object({
     .trim()
     .length(6, "Le code d'appairage doit contenir 6 caractères")
     .regex(/^[A-Z0-9]{6}$/, "Le code d'appairage ne contient que des lettres majuscules et chiffres"),
+});
+
+/**
+ * Validation d'une requête POST /api/parent/link.
+ * `action`=`generate` : l'élève demande un nouveau code.
+ * `action`=`confirm`  : le parent réclame un code existant.
+ */
+export const parentLinkActionSchema = z.discriminatedUnion('action', [
+  z.object({ action: z.literal('generate') }),
+  z.object({ action: z.literal('confirm'), code: pairingCodeSchema.shape.code }),
+]);
+
+/**
+ * Validation du message d'encouragement envoyé par le parent.
+ * Volontairement court pour rester lisible en SMS/WhatsApp.
+ */
+export const parentBoostSchema = z.object({
+  studentId: z.string().uuid("Identifiant de l'élève invalide"),
+  message: z
+    .string()
+    .trim()
+    .min(1, "Le message ne peut pas être vide")
+    .max(280, "Le message ne peut pas dépasser 280 caractères"),
+});
+
+/**
+ * Validation des query params de /api/parent/report.
+ */
+export const parentReportQuerySchema = z.object({
+  studentId: z.string().uuid("Identifiant de l'élève invalide"),
 });

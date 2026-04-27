@@ -10,6 +10,8 @@
  */
 
 import { useCallback, useEffect, useState } from 'react';
+import { processQueue } from '@/lib/offline/sync-queue';
+import { getDB } from '@/lib/offline/db';
 
 interface UseOfflineReturn {
   /** true si l'appareil est connecté à Internet */
@@ -26,6 +28,16 @@ export function useOffline(): UseOfflineReturn {
   );
   const [pendingSync, setPendingSync] = useState(0);
 
+  const refreshPendingCount = useCallback(async () => {
+    try {
+      const db = await getDB();
+      const count = await db.count('syncQueue');
+      setPendingSync(count);
+    } catch {
+      setPendingSync(0);
+    }
+  }, []);
+
   useEffect(() => {
     const handleOnline = () => setIsOnline(true);
     const handleOffline = () => setIsOnline(false);
@@ -33,25 +45,25 @@ export function useOffline(): UseOfflineReturn {
     window.addEventListener('online', handleOnline);
     window.addEventListener('offline', handleOffline);
 
+    void refreshPendingCount();
+
     return () => {
       window.removeEventListener('online', handleOnline);
       window.removeEventListener('offline', handleOffline);
     };
-  }, []);
+  }, [refreshPendingCount]);
+
+  const forceSync = useCallback(async () => {
+    await processQueue();
+    await refreshPendingCount();
+  }, [refreshPendingCount]);
 
   // Traiter la file de sync au retour du réseau
   useEffect(() => {
     if (isOnline) {
       void forceSync();
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isOnline]);
-
-  const forceSync = useCallback(async () => {
-    // TODO: Importer processQueue depuis sync-queue et exécuter
-    // TODO: Mettre à jour pendingSync avec le nombre restant
-    setPendingSync(0);
-  }, []);
+  }, [isOnline, forceSync]);
 
   return { isOnline, pendingSync, forceSync };
 }
