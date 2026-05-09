@@ -1,20 +1,27 @@
 // src/app/api/photo/analyze/route.ts
-import { NextRequest, NextResponse } from "next/server";
-
-// TODO: Implémenter l'analyse de photo de brouillon via Gemini Vision
-// - Vérifier l'authentification de l'élève
-// - Extraire l'image du FormData (ne pas persister sur disque, traitement en mémoire)
-// - Valider le type et la taille de l'image avec Zod
-// - Envoyer l'image à Gemini Vision pour extraction du texte / formules
-// - Retourner le contenu extrait (texte, formules KaTeX, annotations)
 
 /**
- * Analyse photo brouillon via Gemini Vision
+ * Analyse de photo de brouillon via Gemini Vision.
+ *
+ * Fonctionnalité pas encore implémentée — nécessite Gemini 2.5 Flash
+ * avec input multimodal (image). Retourne une erreur explicite
+ * plutôt qu'un placeholder silencieux.
+ *
+ * Quand ce sera implémenté :
+ *   - Extraction texte + formules (KaTeX) depuis une photo
+ *   - Traitement en mémoire (pas de persistance disque)
+ *   - Validation type/taille image via Zod
  */
-export async function POST(_request: NextRequest) {
-  return NextResponse.json({
-    extractedText: "Placeholder extracted text",
-    formulas: [],
-    annotations: [],
-  });
+
+import { NextResponse } from 'next/server';
+
+export async function POST() {
+  return NextResponse.json(
+    {
+      error:
+        "L'analyse de photo n'est pas encore disponible. Cette fonctionnalité arrive bientôt !",
+      code: 'FEATURE_NOT_AVAILABLE',
+    },
+    { status: 501 }
+  );
 }

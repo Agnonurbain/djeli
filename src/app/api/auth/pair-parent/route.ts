@@ -1,16 +1,24 @@
 // src/app/api/auth/pair-parent/route.ts
-import { NextRequest, NextResponse } from "next/server";
-
-// TODO: Implémenter l'appairage parent-élève via code
-// - Vérifier l'authentification du parent
-// - Valider le code d'appairage avec Zod
-// - Vérifier que le code correspond à un élève existant
-// - Créer la relation parent-élève dans la table de liaison
-// - Notifier l'élève de l'appairage via Realtime
 
 /**
- * Appairage parent-élève via code
+ * DÉPRÉCIÉ — cette route est remplacée par /api/parent/link.
+ *
+ * POST /api/parent/link { action: "confirm", code: "ABC234" } (parent)
+ * POST /api/parent/link { action: "generate" }                (élève)
+ *
+ * On garde le fichier pour éviter un 404 si un ancien client appelle
+ * cette URL, mais on retourne un redirect vers la bonne route.
  */
-export async function POST(_request: NextRequest) {
-  return NextResponse.json({ success: true });
+
+import { NextResponse } from 'next/server';
+
+export async function POST() {
+  return NextResponse.json(
+    {
+      error: 'Cette route est déplacée vers /api/parent/link.',
+      code: 'DEPRECATED',
+      redirect: '/api/parent/link',
+    },
+    { status: 301 }
+  );
 }
