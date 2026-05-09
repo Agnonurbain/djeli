@@ -1,0 +1,14 @@
+# robots.txt — Djeli
+# L'app est principalement derrière auth, mais on autorise le crawl
+# des pages d'atterrissage publiques (login, abonnement) pour le SEO local.
+
+User-agent: *
+Allow: /
+Disallow: /api/
+Disallow: /tableau/
+Disallow: /arbre/
+Disallow: /dashboard/
+Disallow: /onboarding/
+
+# Sitemap activé quand on en aura un
+# Sitemap: https://djeli.ci/sitemap.xml
