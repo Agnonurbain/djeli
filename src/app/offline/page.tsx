@@ -7,10 +7,6 @@
  * n'existe. Ultra légère — pas d'appel réseau, pas de composants lourds.
  */
 
-export const metadata = {
-  title: "Hors connexion — Djeli",
-};
-
 export default function OfflinePage() {
   return (
     <main className="flex min-h-screen flex-col items-center justify-center bg-gray-900 px-4 text-center text-white">

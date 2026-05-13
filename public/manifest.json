@@ -26,6 +26,29 @@
       "purpose": "maskable"
     }
   ],
+  "shortcuts": [
+    {
+      "name": "Tableau Noir",
+      "short_name": "Chat",
+      "description": "Discuter avec Prof Chibi",
+      "url": "/tableau",
+      "icons": [{ "src": "/icons/icon-192x192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Arbre de Maîtrise",
+      "short_name": "Arbre",
+      "description": "Voir ma progression",
+      "url": "/arbre",
+      "icons": [{ "src": "/icons/icon-192x192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Abonnement",
+      "short_name": "Premium",
+      "description": "Passer en Premium",
+      "url": "/abonnement",
+      "icons": [{ "src": "/icons/icon-192x192.png", "sizes": "192x192" }]
+    }
+  ],
   "categories": ["education"],
   "prefer_related_applications": false
 }

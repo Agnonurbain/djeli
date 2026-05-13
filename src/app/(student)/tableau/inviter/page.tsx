@@ -14,6 +14,7 @@
 
 import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
+import LogoutButton from "@/components/auth/LogoutButton";
 
 interface LinkState {
   pendingCode: string | null;
@@ -192,6 +193,13 @@ export default function InviterParentPage() {
                 ))}
               </ul>
             )}
+          </section>
+
+          <section className="mt-10 border-t border-gray-200 pt-6">
+            <p className="mb-2 text-xs uppercase tracking-wide text-gray-400">
+              Compte
+            </p>
+            <LogoutButton />
           </section>
         </>
       )}

@@ -14,8 +14,8 @@
  * Variables d'environnement requises :
  *   - TWILIO_ACCOUNT_SID       : SID du compte (AC...)
  *   - TWILIO_AUTH_TOKEN        : jeton d'auth
- *   - TWILIO_WHATSAPP_FROM     : numéro WhatsApp émetteur (ex: "whatsapp:+14155238886" pour la sandbox)
- *   - TWILIO_SMS_FROM          : (optionnel) numéro SMS émetteur
+ *   - TWILIO_WHATSAPP_NUMBER   : numéro WhatsApp émetteur (ex: "whatsapp:+14155238886" pour la sandbox)
+ *   - TWILIO_PHONE_NUMBER      : (optionnel) numéro SMS émetteur
  *
  * En développement, si les variables sont absentes, les appels sont simulés
  * (log console). Cela évite d'avoir à configurer Twilio pour tester le flow
@@ -74,14 +74,16 @@ export async function sendWhatsApp(
   toPhone: string,
   message: string
 ): Promise<SendResult> {
-  const from = process.env.TWILIO_WHATSAPP_FROM;
+  const fromRaw = process.env.TWILIO_WHATSAPP_NUMBER;
   const client = getClient();
 
   const toE164 = normalizePhoneE164(toPhone);
   const toWhatsapp = `whatsapp:${toE164}`;
+  // L'env peut contenir soit "+14155238886" soit "whatsapp:+14155238886"
+  const from = fromRaw?.startsWith('whatsapp:') ? fromRaw : `whatsapp:${fromRaw ?? ''}`;
 
   // Mode simulé — credentials absents ou from non configuré
-  if (!client || !from) {
+  if (!client || !fromRaw) {
     console.log(
       `[twilio:whatsapp:simulated] to=${toWhatsapp} message="${message}"`
     );
@@ -110,7 +112,7 @@ export async function sendSms(
   toPhone: string,
   message: string
 ): Promise<SendResult> {
-  const from = process.env.TWILIO_SMS_FROM;
+  const from = process.env.TWILIO_PHONE_NUMBER;
   const client = getClient();
 
   const to = normalizePhoneE164(toPhone);
